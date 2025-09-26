@@ -327,6 +327,185 @@
                 <div id="recommendations" class="space-y-4"></div>
             </div>
 
+            <!-- Monitoring Tools Setup -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 mb-6">
+                <h2 class="text-2xl font-semibold mb-4 text-indigo-400">Monitoring Tools Setup</h2>
+                <p class="text-gray-400 mb-6">Track which monitoring tools you have configured in your infrastructure</p>
+                
+                <div class="space-y-6">
+                    <!-- Metrics Monitoring -->
+                    <div class="border border-gray-700 rounded-lg p-4 hover:bg-gray-700/20 transition-colors">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="tool-prometheus" class="tool-checkbox mt-1 w-5 h-5 text-blue-600 rounded" data-tool="prometheus">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-blue-400">Prometheus</h3>
+                                    <span class="px-2 py-1 text-xs bg-blue-900/30 text-blue-400 rounded-full">Metrics Monitoring</span>
+                                </div>
+                                <p class="text-gray-300 mb-2">Collects and stores time-series metrics from services; queries for alerts and analysis.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Pull-based scraping</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">PromQL querying</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Alerting rules</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Federation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Tracking -->
+                    <div class="border border-gray-700 rounded-lg p-4 hover:bg-gray-700/20 transition-colors">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="tool-sentry" class="tool-checkbox mt-1 w-5 h-5 text-red-600 rounded" data-tool="sentry">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-red-400">Sentry</h3>
+                                    <span class="px-2 py-1 text-xs bg-red-900/30 text-red-400 rounded-full">Error Tracking</span>
+                                </div>
+                                <p class="text-gray-300 mb-2">Captures errors, exceptions, and performance issues in applications; notifies teams.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Real-time error grouping</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Stack traces</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Breadcrumbs</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Code repo integration</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visualization -->
+                    <div class="border border-gray-700 rounded-lg p-4 hover:bg-gray-700/20 transition-colors">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="tool-grafana" class="tool-checkbox mt-1 w-5 h-5 text-green-600 rounded" data-tool="grafana">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-green-400">Grafana</h3>
+                                    <span class="px-2 py-1 text-xs bg-green-900/30 text-green-400 rounded-full">Visualization</span>
+                                </div>
+                                <p class="text-gray-300 mb-2">Builds dashboards to visualize metrics from sources like Prometheus.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Custom panels</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Alerting</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Data source plugins</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Templating</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Full-Stack Monitoring -->
+                    <div class="border border-gray-700 rounded-lg p-4 hover:bg-gray-700/20 transition-colors">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="tool-datadog" class="tool-checkbox mt-1 w-5 h-5 text-purple-600 rounded" data-tool="datadog">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-purple-400">DataDog</h3>
+                                    <span class="px-2 py-1 text-xs bg-purple-900/30 text-purple-400 rounded-full">Full-Stack Monitoring</span>
+                                </div>
+                                <p class="text-gray-300 mb-2">Monitors infrastructure, applications, logs, and traces across stacks.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Agent-based collection</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Anomaly detection</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">APM</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">500+ integrations</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Infrastructure Monitoring -->
+                    <div class="border border-gray-700 rounded-lg p-4 hover:bg-gray-700/20 transition-colors">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="tool-sitescope" class="tool-checkbox mt-1 w-5 h-5 text-cyan-600 rounded" data-tool="sitescope">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-cyan-400">SiteScope</h3>
+                                    <span class="px-2 py-1 text-xs bg-cyan-900/30 text-cyan-400 rounded-full">Infrastructure Monitoring</span>
+                                </div>
+                                <p class="text-gray-300 mb-2">Agentless monitoring of servers, networks, and apps; collects performance data.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Real-time metrics</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">SNMP support</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">WMI support</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Reporting</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logging -->
+                    <div class="border border-gray-700 rounded-lg p-4 hover:bg-gray-700/20 transition-colors">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="tool-elk" class="tool-checkbox mt-1 w-5 h-5 text-yellow-600 rounded" data-tool="elk">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-yellow-400">ELK Stack</h3>
+                                    <span class="px-2 py-1 text-xs bg-yellow-900/30 text-yellow-400 rounded-full">Logging</span>
+                                </div>
+                                <p class="text-gray-300 mb-2">Elasticsearch, Logstash, Kibana - Ingests, searches, and visualizes logs for troubleshooting.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Scalable search</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Parsing pipelines</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Interactive dashboards</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">ML anomalies</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- APM -->
+                    <div class="border border-gray-700 rounded-lg p-4 hover:bg-gray-700/20 transition-colors">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="tool-newrelic" class="tool-checkbox mt-1 w-5 h-5 text-indigo-600 rounded" data-tool="newrelic">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-indigo-400">New Relic</h3>
+                                    <span class="px-2 py-1 text-xs bg-indigo-900/30 text-indigo-400 rounded-full">APM</span>
+                                </div>
+                                <p class="text-gray-300 mb-2">Tracks app performance, transactions, and user experience.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Distributed tracing</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Error analytics</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">AI insights</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Infrastructure integration</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alerting -->
+                    <div class="border border-gray-700 rounded-lg p-4 hover:bg-gray-700/20 transition-colors">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" id="tool-pagerduty" class="tool-checkbox mt-1 w-5 h-5 text-orange-600 rounded" data-tool="pagerduty">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-orange-400">PagerDuty</h3>
+                                    <span class="px-2 py-1 text-xs bg-orange-900/30 text-orange-400 rounded-full">Alerting</span>
+                                </div>
+                                <p class="text-gray-300 mb-2">Routes alerts from monitoring tools to on-call teams; manages incidents.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">On-call scheduling</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Escalation policies</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Integrations</span>
+                                    <span class="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">Incident workflows</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tools Coverage Summary -->
+                <div class="mt-6 p-4 bg-gray-900/50 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-400">Tools Configured:</span>
+                        <span id="toolsCoverage" class="text-2xl font-bold text-cyan-400">0/8</span>
+                    </div>
+                    <div class="mt-2 w-full bg-gray-700 rounded-full h-2">
+                        <div id="toolsProgressBar" class="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Export Section -->
             <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 text-green-400">Export Monitoring Plan</h2>
@@ -353,11 +532,36 @@
             hardware: {},
             chaos: {}
         };
+        let toolsState = {};
 
         // Initialize checkbox listeners
         document.querySelectorAll('.metric-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', updateMetricsState);
         });
+
+        // Initialize tool checkbox listeners
+        document.querySelectorAll('.tool-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateToolsState);
+        });
+
+        function updateToolsState() {
+            document.querySelectorAll('.tool-checkbox').forEach(checkbox => {
+                toolsState[checkbox.dataset.tool] = checkbox.checked;
+            });
+            
+            // Update tools coverage display
+            const totalTools = document.querySelectorAll('.tool-checkbox').length;
+            const checkedTools = document.querySelectorAll('.tool-checkbox:checked').length;
+            const percentage = Math.round((checkedTools / totalTools) * 100);
+            
+            document.getElementById('toolsCoverage').textContent = `${checkedTools}/${totalTools}`;
+            document.getElementById('toolsProgressBar').style.width = `${percentage}%`;
+            
+            // Add to recommendations if tools coverage is low
+            if (percentage < 50 && systemDesign) {
+                generateRecommendations();
+            }
+        }
 
         function updateMetricsState() {
             document.querySelectorAll('.metric-checkbox').forEach(checkbox => {
@@ -491,7 +695,13 @@
             document.querySelector('[data-metric="server-uptime"]').checked = true;
             document.querySelector('[data-metric="storage-capacity"]').checked = true;
             
+            // Auto-select some tools
+            document.getElementById('tool-prometheus').checked = true;
+            document.getElementById('tool-grafana').checked = true;
+            document.getElementById('tool-elk').checked = true;
+            
             updateMetricsState();
+            updateToolsState();
         }
 
         function analyzeSystemDesign() {
@@ -523,13 +733,36 @@
             
             const recs = [];
             
+            // Check tools coverage
+            const toolsChecked = document.querySelectorAll('.tool-checkbox:checked').length;
+            const totalTools = document.querySelectorAll('.tool-checkbox').length;
+            const toolsPercentage = (toolsChecked / totalTools) * 100;
+            
+            if (toolsPercentage < 30) {
+                recs.push({
+                    priority: 'high',
+                    title: 'Critical: Monitoring Tools Gap',
+                    description: 'You have less than 30% of essential monitoring tools configured. This severely limits visibility.',
+                    impact: 'Increases MTTR by 200-300% due to lack of observability'
+                });
+            }
+            
             // Analyze unchecked critical metrics
-            if (!document.querySelector('[data-metric="distributed-tracing"]').checked && systemDesign.components?.api) {
+            if (!document.querySelector('[data-metric="distributed-tracing"]').checked && systemDesign?.components?.api) {
                 recs.push({
                     priority: 'high',
                     title: 'Enable Distributed Tracing',
                     description: 'Your microservices architecture needs end-to-end tracing for faster MTTR.',
                     impact: 'Reduces debugging time by 60-70%'
+                });
+            }
+            
+            if (!document.getElementById('tool-pagerduty').checked) {
+                recs.push({
+                    priority: 'high',
+                    title: 'Configure Alerting System',
+                    description: 'No incident management system detected. Critical for reducing response times.',
+                    impact: 'Reduces initial response time by 80%'
                 });
             }
             
@@ -542,7 +775,7 @@
                 });
             }
             
-            if (systemDesign.components?.database && !document.querySelector('[data-metric="db-connections"]').checked) {
+            if (systemDesign?.components?.database && !document.querySelector('[data-metric="db-connections"]').checked) {
                 recs.push({
                     priority: 'medium',
                     title: 'Monitor Database Connections',
@@ -551,7 +784,16 @@
                 });
             }
             
-            // Add default recommendations
+            if (!document.getElementById('tool-sentry').checked && systemDesign?.components?.frontend) {
+                recs.push({
+                    priority: 'medium',
+                    title: 'Add Error Tracking',
+                    description: 'Frontend application needs error tracking for user-facing issues.',
+                    impact: 'Catches 95% of user-facing errors before support tickets'
+                });
+            }
+            
+            // Add default recommendations if good coverage
             if (recs.length === 0) {
                 recs.push({
                     priority: 'info',
@@ -649,11 +891,13 @@
             const plan = {
                 systemDesign: systemDesign,
                 metricsEnabled: metricsState,
+                toolsConfigured: toolsState,
                 coverage: {
                     software: calculateCoverage('software'),
                     network: calculateCoverage('network'),
                     hardware: calculateCoverage('hardware'),
-                    chaos: calculateCoverage('chaos')
+                    chaos: calculateCoverage('chaos'),
+                    tools: Math.round((document.querySelectorAll('.tool-checkbox:checked').length / document.querySelectorAll('.tool-checkbox').length) * 100)
                 },
                 recommendations: Array.from(document.querySelectorAll('#recommendations > div')).map(div => ({
                     title: div.querySelector('h4').textContent,
@@ -678,6 +922,12 @@
                 chaos: calculateCoverage('chaos')
             };
             
+            const toolsChecked = document.querySelectorAll('.tool-checkbox:checked');
+            const toolsList = Array.from(toolsChecked).map(cb => {
+                const label = cb.parentElement.querySelector('h3').textContent;
+                return label;
+            });
+            
             const report = `
 MTBF/MTTR METRICS COVERAGE REPORT
 Generated: ${new Date().toLocaleString()}
@@ -692,15 +942,19 @@ COVERAGE SUMMARY:
 
 OVERALL MATURITY: ${Math.round((coverage.software + coverage.network + coverage.hardware + coverage.chaos) / 4)}%
 
+MONITORING TOOLS CONFIGURED (${toolsList.length}/8):
+${toolsList.length > 0 ? toolsList.map(tool => '✓ ' + tool).join('\n') : 'None configured'}
+
 RECOMMENDATIONS:
 ${Array.from(document.querySelectorAll('#recommendations h4')).map(h => '• ' + h.textContent).join('\n')}
 
 Next Steps:
 1. Implement missing critical metrics
-2. Set up alerting thresholds
-3. Create runbooks for incident response
-4. Schedule regular chaos engineering exercises
-5. Review and update metrics quarterly
+2. Deploy unconfigured monitoring tools
+3. Set up alerting thresholds
+4. Create runbooks for incident response
+5. Schedule regular chaos engineering exercises
+6. Review and update metrics quarterly
             `;
             
             const blob = new Blob([report], {type: 'text/plain'});
@@ -716,19 +970,25 @@ Next Steps:
             document.querySelectorAll('.metric-checkbox').forEach(checkbox => {
                 checkbox.checked = false;
             });
+            document.querySelectorAll('.tool-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
             metricsState = {
                 software: {},
                 network: {},
                 hardware: {},
                 chaos: {}
             };
+            toolsState = {};
             document.getElementById('analysisResults').classList.add('hidden');
             document.getElementById('fileInput').value = '';
             updateCoverageDisplay();
+            updateToolsState();
         }
 
         // Initialize
         updateCoverageDisplay();
+        updateToolsState();
     </script>
 </body>
 </html>
