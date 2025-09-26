@@ -475,5 +475,3 @@ Visit: `http://<host>:9100/metrics` for Prometheus-format metrics.
 * **OTel on-ramp**: you can swap `apm_mw.py` for OpenTelemetry SDK to gain traces while keeping the rest.
 
 ---
-
-If you want, I can package this as a ready-to-run Git repo (or a tar.gz) with a Makefile and a Dockerfile so you can drop it on your fleet.
