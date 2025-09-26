@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTBF/MTTR Metrics Coverage Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen text-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-10 text-center slide-in">
+            <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                MTBF/MTTR Metrics Coverage Analyzer
+            </h1>
+            <p class="text-gray-400 text-lg">Assess your monitoring coverage and improve system reliability</p>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="mb-8 bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 slide-in">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-semibold text-cyan-400">System Design Upload</h2>
+                <button onclick="loadSampleDesign()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors text-sm">
+                    Load Sample Design
+                </button>
+            </div>
+            <div class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-cyan-500 transition-colors">
+                <input type="file" id="fileInput" accept=".json" class="hidden" onchange="handleFileUpload(event)">
+                <label for="fileInput" class="cursor-pointer">
+                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <p class="text-gray-400 mb-2">Drop your JSON system design here or click to browse</p>
+                    <p class="text-sm text-gray-500">Expected format: Components with services, databases, networks</p>
+                </label>
+            </div>
+            <div id="uploadStatus" class="mt-4 hidden"></div>
+        </div>
+
+        <!-- Coverage Overview -->
+        <div id="coverageOverview" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 hidden">
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 metric-card">
+                <h3 class="text-lg font-semibold text-blue-400 mb-4">Software Layer</h3>
+                <div class="relative w-32 h-32 mx-auto">
+                    <svg class="progress-ring w-32 h-32">
+                        <circle cx="64" cy="64" r="56" stroke="#1f2937" stroke-width="12" fill="none"/>
+                        <circle id="softwareProgress" cx="64" cy="64" r="56" stroke="#3b82f6" stroke-width="12" fill="none"
+                                stroke-dasharray="351.86" stroke-dashoffset="351.86" stroke-linecap="round"/>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span id="softwarePercent" class="text-3xl font-bold">0%</span>
+                    </div>
+                </div>
+                <p class="text-center mt-4 text-gray-400 text-sm">Application & Service Metrics</p>
+            </div>
+
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 metric-card">
+                <h3 class="text-lg font-semibold text-green-400 mb-4">Network Layer</h3>
+                <div class="relative w-32 h-32 mx-auto">
+                    <svg class="progress-ring w-32 h-32">
+                        <circle cx="64" cy="64" r="56" stroke="#1f2937" stroke-width="12" fill="none"/>
+                        <circle id="networkProgress" cx="64" cy="64" r="56" stroke="#10b981" stroke-width="12" fill="none"
+                                stroke-dasharray="351.86" stroke-dashoffset="351.86" stroke-linecap="round"/>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span id="networkPercent" class="text-3xl font-bold">0%</span>
+                    </div>
+                </div>
+                <p class="text-center mt-4 text-gray-400 text-sm">Connectivity & Traffic Metrics</p>
+            </div>
+
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 metric-card">
+                <h3 class="text-lg font-semibold text-purple-400 mb-4">Hardware Layer</h3>
+                <div class="relative w-32 h-32 mx-auto">
+                    <svg class="progress-ring w-32 h-32">
+                        <circle cx="64" cy="64" r="56" stroke="#1f2937" stroke-width="12" fill="none"/>
+                        <circle id="hardwareProgress" cx="64" cy="64" r="56" stroke="#a855f7" stroke-width="12" fill="none"
+                                stroke-dasharray="351.86" stroke-dashoffset="351.86" stroke-linecap="round"/>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span id="hardwarePercent" class="text-3xl font-bold">0%</span>
+                    </div>
+                </div>
+                <p class="text-center mt-4 text-gray-400 text-sm">Infrastructure & Resource Metrics</p>
+            </div>
+        </div>
+
+        <!-- Metrics Checklist -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Software Metrics -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                <h3 class="text-xl font-semibold mb-4 text-blue-400">Software Layer Metrics</h3>
+                <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="response-time" class="w-4 h-4 text-blue-600 rounded">
+                        <span>Response Time (p50, p95, p99)</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="error-rate" class="w-4 h-4 text-blue-600 rounded">
+                        <span>Error Rates & Exception Tracking</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="throughput" class="w-4 h-4 text-blue-600 rounded">
+                        <span>Request Rate & Throughput</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="memory-usage" class="w-4 h-4 text-blue-600 rounded">
+                        <span>Memory Usage & GC Metrics</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="cpu-usage" class="w-4 h-4 text-blue-600 rounded">
+                        <span>CPU Utilization by Process</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="db-connections" class="w-4 h-4 text-blue-600 rounded">
+                        <span>Database Connection Pool</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="cache-performance" class="w-4 h-4 text-blue-600 rounded">
+                        <span>Cache Hit/Miss Ratios</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="api-availability" class="w-4 h-4 text-blue-600 rounded">
+                        <span>API Endpoint Availability</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="deployment-frequency" class="w-4 h-4 text-blue-600 rounded">
+                        <span>Deployment Frequency & Rollbacks</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="queue-depth" class="w-4 h-4 text-blue-600 rounded">
+                        <span>Queue Depth & Processing Rate</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="software" data-metric="distributed-tracing" class="w-4 h-4 text-blue-600 rounded">
+                        <span>Distributed Tracing Coverage</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Network Metrics -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                <h3 class="text-xl font-semibold mb-4 text-green-400">Network Layer Metrics</h3>
+                <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="network" data-metric="bandwidth" class="w-4 h-4 text-green-600 rounded">
+                        <span>Bandwidth Utilization</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="network" data-metric="packet-loss" class="w-4 h-4 text-green-600 rounded">
+                        <span>Packet Loss Rate</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="network" data-metric="latency" class="w-4 h-4 text-green-600 rounded">
+                        <span>Network Latency & Jitter</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="network" data-metric="dns-resolution" class="w-4 h-4 text-green-600 rounded">
+                        <span>DNS Resolution Time</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="network" data-metric="ssl-handshake" class="w-4 h-4 text-green-600 rounded">
+                        <span>SSL/TLS Handshake Time</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="network" data-metric="load-balancer" class="w-4 h-4 text-green-600 rounded">
+                        <span>Load Balancer Health</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="network" data-metric="cdn-performance" class="w-4 h-4 text-green-600 rounded">
+                        <span>CDN Cache Performance</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="network" data-metric="firewall-violations" class="w-4 h-4 text-green-600 rounded">
+                        <span>Firewall Rule Violations</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="network" data-metric="vpn-status" class="w-4 h-4 text-green-600 rounded">
+                        <span>VPN Tunnel Status</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="network" data-metric="ddos-metrics" class="w-4 h-4 text-green-600 rounded">
+                        <span>DDoS Attack Detection</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Hardware Metrics -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                <h3 class="text-xl font-semibold mb-4 text-purple-400">Hardware Layer Metrics</h3>
+                <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="hardware" data-metric="cpu-temp" class="w-4 h-4 text-purple-600 rounded">
+                        <span>CPU Temperature & Throttling</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="hardware" data-metric="memory-errors" class="w-4 h-4 text-purple-600 rounded">
+                        <span>Memory Errors (ECC)</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="hardware" data-metric="disk-io" class="w-4 h-4 text-purple-600 rounded">
+                        <span>Disk I/O & Queue Length</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="hardware" data-metric="storage-capacity" class="w-4 h-4 text-purple-600 rounded">
+                        <span>Storage Capacity & Growth</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="hardware" data-metric="raid-health" class="w-4 h-4 text-purple-600 rounded">
+                        <span>RAID Array Health</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="hardware" data-metric="power-supply" class="w-4 h-4 text-purple-600 rounded">
+                        <span>Power Supply Status</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="hardware" data-metric="server-uptime" class="w-4 h-4 text-purple-600 rounded">
+                        <span>Server Uptime & Reboots</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="hardware" data-metric="environmental" class="w-4 h-4 text-purple-600 rounded">
+                        <span>Environmental Monitoring</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="hardware" data-metric="ups-status" class="w-4 h-4 text-purple-600 rounded">
+                        <span>UPS/Battery Backup Status</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="hardware" data-metric="nic-errors" class="w-4 h-4 text-purple-600 rounded">
+                        <span>Network Interface Errors</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Chaos Engineering -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                <h3 class="text-xl font-semibold mb-4 text-orange-400">Chaos Engineering Practices</h3>
+                <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="chaos" data-metric="compute-chaos" class="w-4 h-4 text-orange-600 rounded">
+                        <span>Compute Resource Failures</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="chaos" data-metric="network-chaos" class="w-4 h-4 text-orange-600 rounded">
+                        <span>Network Latency Injection</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="chaos" data-metric="container-chaos" class="w-4 h-4 text-orange-600 rounded">
+                        <span>Container/K8s Failures</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="chaos" data-metric="storage-chaos" class="w-4 h-4 text-orange-600 rounded">
+                        <span>Storage/Disk Failures</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="chaos" data-metric="database-chaos" class="w-4 h-4 text-orange-600 rounded">
+                        <span>Database Failure Testing</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="chaos" data-metric="cache-chaos" class="w-4 h-4 text-orange-600 rounded">
+                        <span>Cache Invalidation Testing</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="chaos" data-metric="security-chaos" class="w-4 h-4 text-orange-600 rounded">
+                        <span>Security/Certificate Chaos</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="chaos" data-metric="dependency-chaos" class="w-4 h-4 text-orange-600 rounded">
+                        <span>Dependency Failure Testing</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="chaos" data-metric="region-chaos" class="w-4 h-4 text-orange-600 rounded">
+                        <span>Region/AZ Failure Simulation</span>
+                    </label>
+                    <label class="flex items-center space-x-3 hover:bg-gray-700/30 p-2 rounded cursor-pointer">
+                        <input type="checkbox" class="metric-checkbox" data-category="chaos" data-metric="gamedays" class="w-4 h-4 text-orange-600 rounded">
+                        <span>Regular GameDay Exercises</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Results -->
+        <div id="analysisResults" class="hidden">
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 mb-6">
+                <h2 class="text-2xl font-semibold mb-4 text-cyan-400">Analysis Results</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3 text-gray-300">System Components Detected</h3>
+                        <div id="componentsList" class="space-y-2"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3 text-gray-300">Coverage Analysis</h3>
+                        <canvas id="coverageChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MTBF Recommendations -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 mb-6">
+                <h2 class="text-2xl font-semibold mb-4 text-yellow-400">MTBF Improvement Recommendations</h2>
+                <div id="recommendations" class="space-y-4"></div>
+            </div>
+
+            <!-- Export Section -->
+            <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                <h2 class="text-2xl font-semibold mb-4 text-green-400">Export Monitoring Plan</h2>
+                <div class="flex gap-4">
+                    <button onclick="exportMetricsPlan()" class="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg transition-colors">
+                        Export as JSON
+                    </button>
+                    <button onclick="generateReport()" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                        Generate Report
+                    </button>
+                    <button onclick="resetAnalysis()" class="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors">
+                        Reset Analysis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let systemDesign = null;
+        let metricsState = {
+            software: {},
+            network: {},
+            hardware: {},
+            chaos: {}
+        };
+
+        // Initialize checkbox listeners
+        document.querySelectorAll('.metric-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateMetricsState);
+        });
+
+        function updateMetricsState() {
+            document.querySelectorAll('.metric-checkbox').forEach(checkbox => {
+                const category = checkbox.dataset.category;
+                const metric = checkbox.dataset.metric;
+                metricsState[category][metric] = checkbox.checked;
+            });
+            updateCoverageDisplay();
+        }
+
+        function updateCoverageDisplay() {
+            const categories = ['software', 'network', 'hardware'];
+            
+            categories.forEach(category => {
+                const total = document.querySelectorAll(`.metric-checkbox[data-category="${category}"]`).length;
+                const checked = document.querySelectorAll(`.metric-checkbox[data-category="${category}"]:checked`).length;
+                const percentage = Math.round((checked / total) * 100);
+                
+                // Update progress circle
+                const circle = document.getElementById(`${category}Progress`);
+                const text = document.getElementById(`${category}Percent`);
+                
+                if (circle && text) {
+                    const circumference = 2 * Math.PI * 56;
+                    const offset = circumference - (percentage / 100) * circumference;
+                    circle.style.strokeDashoffset = offset;
+                    text.textContent = `${percentage}%`;
+                }
+            });
+            
+            // Show overview if hidden
+            document.getElementById('coverageOverview').classList.remove('hidden');
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    systemDesign = JSON.parse(e.target.result);
+                    analyzeSystemDesign();
+                    showUploadStatus('success', 'System design loaded successfully!');
+                } catch (error) {
+                    showUploadStatus('error', 'Invalid JSON format. Please check your file.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function showUploadStatus(type, message) {
+            const status = document.getElementById('uploadStatus');
+            status.className = `mt-4 p-4 rounded-lg ${type === 'success' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`;
+            status.textContent = message;
+            status.classList.remove('hidden');
+            
+            setTimeout(() => {
+                status.classList.add('hidden');
+            }, 3000);
+        }
+
+        function loadSampleDesign() {
+            systemDesign = {
+                "name": "E-Commerce Platform",
+                "components": {
+                    "frontend": {
+                        "type": "application",
+                        "technology": "React",
+                        "instances": 3,
+                        "loadBalanced": true
+                    },
+                    "api": {
+                        "type": "service",
+                        "technology": "Node.js",
+                        "instances": 5,
+                        "autoscaling": true
+                    },
+                    "database": {
+                        "type": "database",
+                        "technology": "PostgreSQL",
+                        "replicas": 2,
+                        "backups": true
+                    },
+                    "cache": {
+                        "type": "cache",
+                        "technology": "Redis",
+                        "cluster": true
+                    },
+                    "messageQueue": {
+                        "type": "queue",
+                        "technology": "RabbitMQ",
+                        "instances": 2
+                    },
+                    "cdn": {
+                        "type": "network",
+                        "technology": "CloudFront",
+                        "global": true
+                    }
+                },
+                "infrastructure": {
+                    "cloud": "AWS",
+                    "regions": ["us-east-1", "eu-west-1"],
+                    "kubernetes": true,
+                    "monitoring": {
+                        "apm": "partial",
+                        "logging": "enabled",
+                        "metrics": "basic"
+                    }
+                }
+            };
+            
+            analyzeSystemDesign();
+            showUploadStatus('success', 'Sample design loaded successfully!');
+            
+            // Auto-check some metrics based on sample
+            autoSelectMetrics();
+        }
+
+        function autoSelectMetrics() {
+            // Software metrics for detected components
+            document.querySelector('[data-metric="response-time"]').checked = true;
+            document.querySelector('[data-metric="error-rate"]').checked = true;
+            document.querySelector('[data-metric="api-availability"]').checked = true;
+            
+            // Network metrics
+            document.querySelector('[data-metric="cdn-performance"]').checked = true;
+            document.querySelector('[data-metric="load-balancer"]').checked = true;
+            
+            // Hardware metrics
+            document.querySelector('[data-metric="server-uptime"]').checked = true;
+            document.querySelector('[data-metric="storage-capacity"]').checked = true;
+            
+            updateMetricsState();
+        }
+
+        function analyzeSystemDesign() {
+            document.getElementById('analysisResults').classList.remove('hidden');
+            
+            // Display components
+            const componentsList = document.getElementById('componentsList');
+            componentsList.innerHTML = '';
+            
+            if (systemDesign.components) {
+                Object.entries(systemDesign.components).forEach(([name, details]) => {
+                    const badge = document.createElement('div');
+                    badge.className = 'inline-block px-3 py-1 bg-cyan-900/30 text-cyan-400 rounded-full text-sm mr-2 mb-2';
+                    badge.textContent = `${name} (${details.technology || details.type})`;
+                    componentsList.appendChild(badge);
+                });
+            }
+            
+            // Generate recommendations
+            generateRecommendations();
+            
+            // Create coverage chart
+            createCoverageChart();
+        }
+
+        function generateRecommendations() {
+            const recommendations = document.getElementById('recommendations');
+            recommendations.innerHTML = '';
+            
+            const recs = [];
+            
+            // Analyze unchecked critical metrics
+            if (!document.querySelector('[data-metric="distributed-tracing"]').checked && systemDesign.components?.api) {
+                recs.push({
+                    priority: 'high',
+                    title: 'Enable Distributed Tracing',
+                    description: 'Your microservices architecture needs end-to-end tracing for faster MTTR.',
+                    impact: 'Reduces debugging time by 60-70%'
+                });
+            }
+            
+            if (!document.querySelector('[data-metric="chaos"]').checked) {
+                recs.push({
+                    priority: 'high',
+                    title: 'Implement Chaos Engineering',
+                    description: 'Regular failure injection will identify weaknesses before they cause outages.',
+                    impact: 'Improves MTBF by 40-50%'
+                });
+            }
+            
+            if (systemDesign.components?.database && !document.querySelector('[data-metric="db-connections"]').checked) {
+                recs.push({
+                    priority: 'medium',
+                    title: 'Monitor Database Connections',
+                    description: 'Track connection pool metrics to prevent database bottlenecks.',
+                    impact: 'Prevents 30% of database-related incidents'
+                });
+            }
+            
+            // Add default recommendations
+            if (recs.length === 0) {
+                recs.push({
+                    priority: 'info',
+                    title: 'Good Coverage Detected',
+                    description: 'Your monitoring setup covers the essential metrics. Consider adding predictive analytics.',
+                    impact: 'Further improvement possible with ML-based anomaly detection'
+                });
+            }
+            
+            recs.forEach(rec => {
+                const recDiv = document.createElement('div');
+                const priorityColors = {
+                    high: 'border-red-500 bg-red-900/20',
+                    medium: 'border-yellow-500 bg-yellow-900/20',
+                    low: 'border-blue-500 bg-blue-900/20',
+                    info: 'border-green-500 bg-green-900/20'
+                };
+                
+                recDiv.className = `p-4 rounded-lg border ${priorityColors[rec.priority]}`;
+                recDiv.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold text-lg">${rec.title}</h4>
+                        <span class="px-2 py-1 text-xs rounded-full bg-gray-700 text-gray-300">${rec.priority.toUpperCase()}</span>
+                    </div>
+                    <p class="text-gray-400 mb-2">${rec.description}</p>
+                    <p class="text-sm text-cyan-400">Impact: ${rec.impact}</p>
+                `;
+                recommendations.appendChild(recDiv);
+            });
+        }
+
+        function createCoverageChart() {
+            const ctx = document.getElementById('coverageChart').getContext('2d');
+            
+            const data = {
+                labels: ['Software', 'Network', 'Hardware', 'Chaos'],
+                datasets: [{
+                    label: 'Current Coverage',
+                    data: [
+                        calculateCoverage('software'),
+                        calculateCoverage('network'),
+                        calculateCoverage('hardware'),
+                        calculateCoverage('chaos')
+                    ],
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 2
+                }, {
+                    label: 'Recommended',
+                    data: [90, 85, 80, 75],
+                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    borderWidth: 2
+                }]
+            };
+            
+            new Chart(ctx, {
+                type: 'radar',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#9ca3af'
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: {
+                                color: '#9ca3af'
+                            },
+                            grid: {
+                                color: '#374151'
+                            },
+                            pointLabels: {
+                                color: '#9ca3af'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function calculateCoverage(category) {
+            const total = document.querySelectorAll(`.metric-checkbox[data-category="${category}"]`).length;
+            const checked = document.querySelectorAll(`.metric-checkbox[data-category="${category}"]:checked`).length;
+            return total > 0 ? Math.round((checked / total) * 100) : 0;
+        }
+
+        function exportMetricsPlan() {
+            const plan = {
+                systemDesign: systemDesign,
+                metricsEnabled: metricsState,
+                coverage: {
+                    software: calculateCoverage('software'),
+                    network: calculateCoverage('network'),
+                    hardware: calculateCoverage('hardware'),
+                    chaos: calculateCoverage('chaos')
+                },
+                recommendations: Array.from(document.querySelectorAll('#recommendations > div')).map(div => ({
+                    title: div.querySelector('h4').textContent,
+                    description: div.querySelector('p').textContent
+                })),
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(plan, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mtbf-metrics-plan-${Date.now()}.json`;
+            a.click();
+        }
+
+        function generateReport() {
+            const coverage = {
+                software: calculateCoverage('software'),
+                network: calculateCoverage('network'),
+                hardware: calculateCoverage('hardware'),
+                chaos: calculateCoverage('chaos')
+            };
+            
+            const report = `
+MTBF/MTTR METRICS COVERAGE REPORT
+Generated: ${new Date().toLocaleString()}
+
+SYSTEM: ${systemDesign?.name || 'Unknown'}
+
+COVERAGE SUMMARY:
+- Software Layer: ${coverage.software}%
+- Network Layer: ${coverage.network}%
+- Hardware Layer: ${coverage.hardware}%
+- Chaos Engineering: ${coverage.chaos}%
+
+OVERALL MATURITY: ${Math.round((coverage.software + coverage.network + coverage.hardware + coverage.chaos) / 4)}%
+
+RECOMMENDATIONS:
+${Array.from(document.querySelectorAll('#recommendations h4')).map(h => '• ' + h.textContent).join('\n')}
+
+Next Steps:
+1. Implement missing critical metrics
+2. Set up alerting thresholds
+3. Create runbooks for incident response
+4. Schedule regular chaos engineering exercises
+5. Review and update metrics quarterly
+            `;
+            
+            const blob = new Blob([report], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mtbf-report-${Date.now()}.txt`;
+            a.click();
+        }
+
+        function resetAnalysis() {
+            systemDesign = null;
+            document.querySelectorAll('.metric-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            metricsState = {
+                software: {},
+                network: {},
+                hardware: {},
+                chaos: {}
+            };
+            document.getElementById('analysisResults').classList.add('hidden');
+            document.getElementById('fileInput').value = '';
+            updateCoverageDisplay();
+        }
+
+        // Initialize
+        updateCoverageDisplay();
+    </script>
+</body>
+</html>
